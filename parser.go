@@ -2,7 +2,6 @@ package cursor
 
 import (
 	"bytes"
-	"errors"
 	"strconv"
 
 	"github.com/sohaha/zlsgo/zstring"
@@ -26,7 +25,7 @@ func Parse(data []byte) (string, error) {
 				return "", err
 			}
 			if len(p) == 0 {
-				return "", errors.New("parse error")
+				continue
 			}
 			code, _ := strconv.Unquote(p[0][0])
 			buffer.WriteString(code)

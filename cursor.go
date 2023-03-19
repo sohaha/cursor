@@ -25,7 +25,6 @@ func ConvRequest(data *ConvReq) (response string, err error) {
 	if err != nil {
 		return "", err
 	}
-
 	return Parse(res.Bytes())
 }
 
@@ -50,6 +49,6 @@ func convPayload(message, msgType string, language ...string) *ConvReq {
 		UserMessages: []any{},
 		BotMessages:  []any{},
 		ContextType:  "copilot",
-		RootPath:     "/",
+		RootPath:     zfile.RealPath("."),
 	}
 }
