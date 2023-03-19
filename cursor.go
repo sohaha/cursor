@@ -13,7 +13,15 @@ const (
 )
 
 func Conv(message string, language ...string) (response string, err error) {
-	res, err := NewRequest(http.MethodPost, convUrl, convPayload(message, language...))
+	return ConvRequest(convPayload(message, "generate", language...))
+}
+
+func ConvRequest(data *ConvReq) (response string, err error) {
+	payload, err := json.Marshal(data)
+	if err != nil {
+		return "", err
+	}
+	res, err := NewRequest(http.MethodPost, convUrl, payload)
 	if err != nil {
 		return "", err
 	}
@@ -21,12 +29,13 @@ func Conv(message string, language ...string) (response string, err error) {
 	return Parse(res.Bytes())
 }
 
-func convPayload(message string, language ...string) []byte {
+func convPayload(message, msgType string, language ...string) *ConvReq {
 	ext := ".go"
 	if len(language) > 0 {
 		ext = "." + language[0]
 	}
-	conversation := ConvReq{
+
+	return &ConvReq{
 		UserRequest: UserReq{
 			Message:              message,
 			CurrentFileName:      zstring.Rand(zstring.RandInt(3, 8), "abcdefghijklmnopqrstuvwxyz") + ext,
@@ -36,14 +45,11 @@ func convPayload(message string, language ...string) []byte {
 			CopilotCodeBlocks:    []any{},
 			CustomCodeBlocks:     []any{},
 			CodeBlockIdentifiers: []any{},
-			MsgType:              "generate",
+			MsgType:              msgType,
 		},
 		UserMessages: []any{},
 		BotMessages:  []any{},
 		ContextType:  "copilot",
-		RootPath:     "",
+		RootPath:     "/",
 	}
-	payload, _ := json.Marshal(conversation)
-
-	return payload
 }
