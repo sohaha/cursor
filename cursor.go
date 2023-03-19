@@ -23,7 +23,7 @@ func Conv(message string, language ...string) (response string, err error) {
 
 func convPayload(message string, language ...string) []byte {
 	ext := ".go"
-	if len(language) > 0 && language[0] != "" {
+	if len(language) > 0 {
 		ext = "." + language[0]
 	}
 	conversation := ConvReq{
