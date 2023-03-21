@@ -1,9 +1,12 @@
 package cursor
 
 import (
+	"time"
+
 	"github.com/sohaha/zlsgo/zhttp"
 )
 
+var Timeout = time.Second * 10
 var request = zhttp.New()
 
 func NewRequest(method string, url string, payload []byte) (res *zhttp.Res, err error) {
@@ -16,6 +19,8 @@ func NewRequest(method string, url string, payload []byte) (res *zhttp.Res, err 
 		"Sec-Fetch-Dest":  "empty",
 		"Accept-Encoding": "gzip, deflate, br",
 	}
+
+	request.SetTimeout(Timeout)
 
 	return request.Do(method, url, headers, zhttp.BodyJSON(payload))
 }
