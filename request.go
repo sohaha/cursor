@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/sohaha/zlsgo/zhttp"
-	"github.com/sohaha/zlsgo/zlog"
 )
 
 var Timeout = time.Second * 10
@@ -37,17 +36,30 @@ func NewRequest(method string, url string, payload []byte) (res *zhttp.Res, err 
 	res, err = request.Do(method, url, values...)
 
 	if err != nil {
-		zlog.Error(err)
 		if strings.Contains(err.Error(), "context deadline exceeded") {
 			err = errors.New("timeout")
 		}
 		return
 	}
 
-	if res.StatusCode() == 504 {
-		err = errors.New("maximum capacity reached")
+	errMsg := "request busy"
+	status := res.StatusCode()
+	switch status {
+	case 504:
+		errMsg = "maximum capacity reached"
+	case 500:
+		errMsg = "server error"
+	case 429:
+		errMsg = "too many requests"
+	case 200:
 		return
+	default:
+		detail := res.JSON("detail").String()
+		if detail != "" {
+			errMsg = detail
+		}
 	}
 
+	err = errors.New(errMsg)
 	return
 }

@@ -21,10 +21,12 @@ func ConvRequest(data *ConvReq) (response string, err error) {
 	if err != nil {
 		return "", err
 	}
+
 	res, err := NewRequest(http.MethodPost, convUrl, payload)
 	if err != nil {
 		return "", err
 	}
+
 	return Parse(res.Bytes())
 }
 
@@ -46,8 +48,8 @@ func convPayload(message, msgType string, language ...string) *ConvReq {
 			CodeBlockIdentifiers: []any{},
 			MsgType:              msgType,
 		},
-		UserMessages: []any{},
-		BotMessages:  []any{},
+		UserMessages: []*UserMessage{},
+		BotMessages:  []*BotMessage{},
 		ContextType:  "copilot",
 		RootPath:     zfile.RealPath("."),
 	}
